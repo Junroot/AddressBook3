@@ -1,5 +1,6 @@
 package com.addressbook;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -7,20 +8,25 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener
 {
-
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -35,6 +41,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	
 	Fragment callTab = new CallTab();
 	Fragment messagetab = new MessageTab();
 	Fragment addresstab = new AddressTab();
@@ -44,7 +51,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
+		
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -81,12 +89,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener
 	}
 
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main, menu);
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -209,6 +216,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 			return rootView;
 		}
+		
+		
 	}
-
 }

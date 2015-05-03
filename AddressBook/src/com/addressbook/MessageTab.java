@@ -10,7 +10,7 @@ public class MessageTab extends Fragment
 {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	View rootView = inflater.inflate(R.layout.activity_message_tab, container, false);
-	return rootView;
+		View rootView = inflater.inflate(R.layout.activity_message_tab, container, false);
+		return rootView;
 	}
 }

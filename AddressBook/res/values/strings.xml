@@ -11,9 +11,12 @@
     <string name="title_activity_call_tab">CallTab</string>
     <string name="title_activity_address_tab">AddressTab</string>
     <string name="title_activity_message_tab">MessageTab</string>
-    <string name="search">search</string>
+    <string name="add">추가</string>
+    <string name="edit">수정</string>
     <string name="address_tab_text">여긴 주소록 탭이다.</string>
     <string name="call_tab_text">여긴 전화 탭이다.</string>
     <string name="message_tab_text">여긴 메시지 탭이다.</string>
+    <string name="title_activity_add_address">취소</string>
+    <string name="title_activity_edit_address">취소</string>
 
 </resources>
