@@ -1,12 +1,9 @@
 package com.addressbook;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.ClipData.Item;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,26 +18,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class AddressTab extends Fragment
 {
-	
+	TextView search;
 	SQLiteDatabase db;
 	SimpleCursorAdapter adapter;
 	ListView lv_people;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.activity_address_tab, container, false);
-		
-		
+	
+		search = (TextView) getActivity().findViewById(R.id.action_search);
 	return rootView;
 	}
 	
@@ -51,12 +44,11 @@ public class AddressTab extends Fragment
 		DBHelper helper = new DBHelper(getActivity());
 		db = helper.getWritableDatabase();
 		//db.execSQL("INSERT INTO people VALUES (null, '" + "testname" + "', '" + "testnum" + "');");
-		
 		/*
 		 * 여기서의 Cursor는 우리가 아는 그 커서와 동일한 작업을 DB에 대해 수행하기 위해 사용됩니다.
 		 * 이 예제 코드에서 Cursor는 people 테이블의 각 요소를 자동으로 탐색하며 ListView를 채워 주는 코드에 사용되고 있습니다.
 		 */
-		Cursor cursor = db.rawQuery("SELECT * FROM people", null);
+		Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
 		cursor.moveToFirst();
 		
 		/*
@@ -85,7 +77,7 @@ public class AddressTab extends Fragment
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position, final long id)
 		{
-			Cursor cursor = db.rawQuery("SELECT * FROM people", null);
+			Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
 			cursor.moveToPosition(position);
 			Intent intent = new Intent(getActivity(), EditAddress.class);
 	    	intent.putExtra("name", cursor.getString(1));
@@ -113,7 +105,7 @@ public class AddressTab extends Fragment
 			public void onClick(DialogInterface dialog, int which) {
 				String string =String.valueOf(id);
 		        db.execSQL("DELETE FROM people WHERE _id = '" + string + "'");
-		        Cursor cursor = db.rawQuery("SELECT * FROM people", null);
+		        Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
 				cursor.moveToFirst();
 				adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, cursor, new String[] { "name", "number" }, new int[] { android.R.id.text1, android.R.id.text2 }, 0);
 		        lv_people = (ListView)getActivity().findViewById(R.id.addresslist);
@@ -135,11 +127,11 @@ public class AddressTab extends Fragment
 		
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		    // Inflate the menu items for use in the action bar
-			super.onCreateOptionsMenu(menu, inflater);
-		    inflater.inflate(R.menu.menu_address, menu);
+		// Inflate the menu items for use in the action bar
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_address, menu);
 	}
-		
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 	    switch(item.getItemId()){
@@ -154,7 +146,4 @@ public class AddressTab extends Fragment
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	
-	
 }

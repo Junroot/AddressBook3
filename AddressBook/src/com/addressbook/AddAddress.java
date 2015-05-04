@@ -73,7 +73,7 @@ public class AddAddress extends Activity
 				DBHelper helper = new DBHelper(this);
 				db = helper.getWritableDatabase();
 				db.execSQL("INSERT INTO people VALUES (null, '" + tb_name.getText().toString() + "', '" + tb_number.getText().toString() + "');");
-				Cursor cursor = db.rawQuery("SELECT * FROM people", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
 				cursor.moveToFirst();
 				setResult(RESULT_OK, intent);
 				finish();

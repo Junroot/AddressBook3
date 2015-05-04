@@ -2,6 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.addressbook.MainActivity" >
 
+    <item 
+    android:id="@+id/action_search"
+    android:showAsAction="ifRoom"
+    android:actionViewClass="android.widget.SearchView"
+    android:title="@string/search"
+   android:icon="@drawable/search"></item>
+    
    <item android:id="@+id/add"
        	 android:icon="@drawable/add"
          android:title="@string/add"

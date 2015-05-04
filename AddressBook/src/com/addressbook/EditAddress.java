@@ -76,7 +76,7 @@ public class EditAddress extends Activity
 				db = helper.getWritableDatabase();
 				db.execSQL("UPDATE people SET name = '" + tb_name.getText().toString() + "' WHERE _id = '" + String.valueOf(addressid)  + "';");
 				db.execSQL("UPDATE people SET number = '" + tb_number.getText().toString() + "' WHERE _id = '" + String.valueOf(addressid)  + "';");
-				Cursor cursor = db.rawQuery("SELECT * FROM people", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
 				cursor.moveToFirst();
 				setResult(RESULT_OK, intent);
 				finish();
