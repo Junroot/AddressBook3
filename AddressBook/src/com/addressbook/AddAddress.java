@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class AddAddress extends Activity
 {
-
+	String search;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -24,6 +24,8 @@ public class AddAddress extends Activity
 		
 		EditText tb_number = (EditText)findViewById(R.id.tb_number);
 		EditText tb_name = (EditText)findViewById(R.id.tb_name);
+		
+		search = intent.getStringExtra("search");
 		
 		tb_number.setText(intent.getStringExtra("number"));
 		tb_name.setText(intent.getStringExtra("name"));
@@ -65,7 +67,7 @@ public class AddAddress extends Activity
 				
 				intent.putExtra("name", tb_name.getText().toString());
 				intent.putExtra("number", tb_number.getText().toString());
-				
+				search = intent.getStringExtra("search");
 				/*
 				 * 이 Activity의 작업을 성공적으로 종료하고 이전 Activity로 돌아가기 위한 코드입니다.
 				 */
@@ -73,7 +75,7 @@ public class AddAddress extends Activity
 				DBHelper helper = new DBHelper(this);
 				db = helper.getWritableDatabase();
 				db.execSQL("INSERT INTO people VALUES (null, '" + tb_name.getText().toString() + "', '" + tb_number.getText().toString() + "');");
-				Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
 				cursor.moveToFirst();
 				setResult(RESULT_OK, intent);
 				finish();

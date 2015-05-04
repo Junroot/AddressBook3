@@ -14,6 +14,7 @@ import android.widget.Toast;
 public class EditAddress extends Activity
 {
 	long addressid;
+	String search;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -25,6 +26,7 @@ public class EditAddress extends Activity
 		EditText tb_number = (EditText)findViewById(R.id.tb_number);
 		EditText tb_name = (EditText)findViewById(R.id.tb_name);
 		addressid = intent.getLongExtra("addressid", addressid);
+		search = intent.getStringExtra("string");
 		
 		tb_number.setText(intent.getStringExtra("number"));
 		tb_name.setText(intent.getStringExtra("name"));
@@ -64,6 +66,7 @@ public class EditAddress extends Activity
 				 */
 				EditText tb_number = (EditText)findViewById(R.id.tb_number);
 				addressid = intent.getLongExtra("addressid", addressid);
+				search = intent.getStringExtra("string");
 				
 				intent.putExtra("name", tb_name.getText().toString());
 				intent.putExtra("number", tb_number.getText().toString());
@@ -76,7 +79,7 @@ public class EditAddress extends Activity
 				db = helper.getWritableDatabase();
 				db.execSQL("UPDATE people SET name = '" + tb_name.getText().toString() + "' WHERE _id = '" + String.valueOf(addressid)  + "';");
 				db.execSQL("UPDATE people SET number = '" + tb_number.getText().toString() + "' WHERE _id = '" + String.valueOf(addressid)  + "';");
-				Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
 				cursor.moveToFirst();
 				setResult(RESULT_OK, intent);
 				finish();

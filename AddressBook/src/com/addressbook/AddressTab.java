@@ -4,11 +4,13 @@ package com.addressbook;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
@@ -18,22 +20,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Toast;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 
 public class AddressTab extends Fragment
 {
-	TextView search;
+	String search="";
 	SQLiteDatabase db;
 	SimpleCursorAdapter adapter;
 	ListView lv_people;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.activity_address_tab, container, false);
-	
-		search = (TextView) getActivity().findViewById(R.id.action_search);
 	return rootView;
 	}
 	
@@ -48,7 +52,7 @@ public class AddressTab extends Fragment
 		 * 여기서의 Cursor는 우리가 아는 그 커서와 동일한 작업을 DB에 대해 수행하기 위해 사용됩니다.
 		 * 이 예제 코드에서 Cursor는 people 테이블의 각 요소를 자동으로 탐색하며 ListView를 채워 주는 코드에 사용되고 있습니다.
 		 */
-		Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
+		Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
 		cursor.moveToFirst();
 		
 		/*
@@ -77,12 +81,13 @@ public class AddressTab extends Fragment
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position, final long id)
 		{
-			Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
+			Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
 			cursor.moveToPosition(position);
 			Intent intent = new Intent(getActivity(), EditAddress.class);
 	    	intent.putExtra("name", cursor.getString(1));
 			intent.putExtra("number", cursor.getString(2));
 			intent.putExtra("addressid", id);
+			intent.putExtra("search", search);
 			getActivity().startActivityForResult(intent, 0);
 		}
 	};
@@ -105,7 +110,7 @@ public class AddressTab extends Fragment
 			public void onClick(DialogInterface dialog, int which) {
 				String string =String.valueOf(id);
 		        db.execSQL("DELETE FROM people WHERE _id = '" + string + "'");
-		        Cursor cursor = db.rawQuery("SELECT * FROM people order by name, number asc", null);
+		        Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
 				cursor.moveToFirst();
 				adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, cursor, new String[] { "name", "number" }, new int[] { android.R.id.text1, android.R.id.text2 }, 0);
 		        lv_people = (ListView)getActivity().findViewById(R.id.addresslist);
@@ -130,7 +135,39 @@ public class AddressTab extends Fragment
 		// Inflate the menu items for use in the action bar
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.menu_address, menu);
+		
+		 SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+	        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+	            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+	            searchView.setIconifiedByDefault(true);   
+
+	        SearchView.OnQueryTextListener textChangeListener = new SearchView.OnQueryTextListener() 
+	        {
+	            @Override
+	            public boolean onQueryTextChange(String newText) 
+	            {
+	                // this is your adapter that will be filtered
+	            	search = newText;
+	            	Cursor cursor = db.rawQuery("SELECT * FROM people WHERE (name like "+"'%"+search+"%'" +") or ( number like "+"'%"+search+"%'" +")order by name, number asc", null);
+					cursor.moveToFirst();
+					adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, cursor, new String[] { "name", "number" }, new int[] { android.R.id.text1, android.R.id.text2 }, 0);
+			        lv_people = (ListView)getActivity().findViewById(R.id.addresslist);
+					lv_people.setAdapter(adapter);
+	                return true;
+	            }
+	            @Override
+	            public boolean onQueryTextSubmit(String query) 
+	            {
+	                // this is your adapter that will be filtered
+	            	Toast toast = Toast.makeText(getActivity(), "이름을 입력해주세요.", Toast.LENGTH_SHORT);
+					toast.show();
+	                return true;
+	            }
+	        };
+	        searchView.setOnQueryTextListener(textChangeListener);
 	}
+
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
@@ -140,6 +177,7 @@ public class AddressTab extends Fragment
 	    	Intent intent = new Intent(getActivity(), AddAddress.class);
 	    	//intent.putExtra("name", "");
 			//intent.putExtra("number", "");
+	    	intent.putExtra("search", search);
 			getActivity().startActivityForResult(intent, 0);
 			return true;
 	        default:
